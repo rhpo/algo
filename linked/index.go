@@ -5,41 +5,121 @@ import (
 	. "linked/list"
 )
 
-var l PList
-var p PList
+var H PList
+
+func LongestSub(H PList, Sx *int, Px *PList) {
+	if H == nil {
+		*Sx = 0
+		*Px = nil
+	} else {
+		p := H
+
+		maxSequenceLength := 0
+		currentSequenceLength := 1
+		var pCurrentMax PList = nil
+		var pCurrentStart PList = nil
+
+		for p.Next != nil {
+			if pCurrentStart == nil {
+				pCurrentStart = p
+			}
+
+			if p.Next.Data > p.Data {
+				currentSequenceLength++
+			} else {
+				if currentSequenceLength > maxSequenceLength {
+					maxSequenceLength = currentSequenceLength
+					pCurrentMax = pCurrentStart
+				}
+				currentSequenceLength = 1
+				pCurrentStart = nil
+			}
+
+			p = p.Next
+		}
+
+		// Check the last sequence
+		if currentSequenceLength > maxSequenceLength {
+			maxSequenceLength = currentSequenceLength
+			pCurrentMax = pCurrentStart
+		}
+
+		*Px = pCurrentMax
+		*Sx = maxSequenceLength
+	}
+}
+
+func DetachLongest(H PList, Px PList) {
+
+	h := H
+	prev := h
+
+	for h != nil && h != Px {
+		prev = h
+		h = h.Next
+	}
+
+	endList := h
+	if h != nil {
+		for endList != nil && endList.Next != nil && endList.Data < endList.Next.Data {
+			endList = endList.Next
+		}
+
+		fmt.Printf("P1: %d, P2: %d\n", prev.Data, endList.Data)
+		prev.Next = endList.Next
+	}
+
+}
 
 func main() {
 
-	n := 0
+	var n int
+
 	for n <= 0 {
-		fmt.Print("Enter n: ")
+		fmt.Printf("Enter n: ")
 		fmt.Scanf("%d", &n)
 	}
 
-	x := 0
 	for i := 0; i < n; i++ {
-		fmt.Print("Enter value: ")
-		fmt.Scanf("%d", &x)
 
-		p = &Node{Data: x}
-		p.Next = l
-		l = p
+		value := 0
+
+		p := &Node{}
+		p.Next = nil
+
+		fmt.Printf("Enter element %d: ", i+1)
+		fmt.Scanf("%d", &value)
+		p.Data = value
+
+		q := H
+
+		if H == nil {
+			H = p
+		} else {
+			for q.Next != nil {
+				q = q.Next
+			}
+
+			q.Next = p
+		}
+
 	}
 
-	var q PList
+	Display(H)
 
-	q = l
-	for q.Next != nil {
-		q = q.Next
-	}
+	var max int
+	var PM PList
 
-	for i := 0; i < n; i++ {
-		fmt.Print("Enter value: ")
-		fmt.Scanf("%d", &x)
+	LongestSub(H, &max, &PM)
 
-		q.Next = &Node{Data: x}
-		q = q.Next
-	}
+	Display(PM)
 
-	Display(l)
+	fmt.Println("Before :")
+	Display(H)
+
+	DetachLongest(H, PM)
+
+	fmt.Println("After :")
+	Display(H)
+
 }

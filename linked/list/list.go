@@ -31,11 +31,6 @@ type Node struct {
 
 type PList *Node
 
-// New creates and returns a new empty linked list
-func New() PList {
-	return &Node{Data: 0, Next: nil}
-}
-
 func Display(ll PList) {
 	h := ll
 
